@@ -1,0 +1,21 @@
+.item {
+  min-width: 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px;
+  border: 2px solid black;
+  border-radius: 5px;
+}
+
+.name {
+  font-size: 24px;
+  letter-spacing: 1.2px;
+  line-height: 1;
+  padding-top: 10px;
+}
+
+.status {
+  letter-spacing: 1.1px;
+}
