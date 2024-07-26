@@ -1,25 +1,60 @@
-import Profile from './components/profile/Profile';
-import userData from './userData.json';
-import friends from './friends.json';
-import FriendList from './components/friendList/FriendList';
-import transactions from './transactions.json';
-import TransactionHistory from './components/transactionHistory/TransactionHistory';
+import { useEffect, useState } from 'react';
+import Description from './components/Description/Description';
+import Options from './components/Options/Options';
+import Feedback from './components/Feedback/Feedback';
+import Notification from './components/Notification/Notification';
 
-const App = () => {
+const DEFAULT_FEEDBACK = {
+  good: 0,
+  neutral: 0,
+  bad: 0,
+};
+
+function App() {
+  const [feedback, setFeedback] = useState(
+    JSON.parse(localStorage.getItem('savedFeedback')) || DEFAULT_FEEDBACK
+  );
+
+  const updateFeedback = feedbackType =>
+    setFeedback(
+      feedbackType
+        ? {
+            ...feedback,
+            [feedbackType]: feedback[feedbackType] + 1,
+          }
+        : DEFAULT_FEEDBACK
+    );
+
+  const totalFeedback = Object.keys(feedback).reduce(
+    (acc, key) => acc + feedback[key],
+    0
+  );
+
+  const positiveFeedback = Math.round((feedback.good / totalFeedback) * 100);
+
+  useEffect(() => {
+    localStorage.setItem('savedFeedback', JSON.stringify(feedback));
+  }, [feedback]);
+
   return (
     <>
-      <Profile
-        name={userData.username}
-        tag={userData.tag}
-        location={userData.location}
-        image={userData.avatar}
-        stats={userData.stats}
-      />
+      <Description title="Sip Happens Café">
+        Please leave your feedback about our service by selecting one of the
+        options below.
+      </Description>
+      <Options onUpdate={updateFeedback} totalFeedback={totalFeedback} />
 
-      <FriendList friends={friends} />
-      <TransactionHistory items={transactions} />
+      {totalFeedback ? (
+        <Feedback
+          {...feedback}
+          totalFeedback={totalFeedback}
+          positiveFeedback={positiveFeedback}
+        />
+      ) : (
+        <Notification>No feedback yet</Notification>
+      )}
     </>
   );
-};
+}
 
 export default App;
